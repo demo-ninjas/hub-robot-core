@@ -1,8 +1,7 @@
 
 #include "button.h"
-#include "functional"
 
-Button::Button(int pin, unsigned long debounce_delay_ms, bool use_interupts, bool btn_pulls_to_ground, unsigned long long_press_time_ms, unsigned long double_press_time_ms) {
+Button::Button(int pin, unsigned long debounce_delay_ms, bool use_interrupts, bool btn_pulls_to_ground, unsigned long long_press_time_ms, unsigned long double_press_time_ms) {
     this->pin = pin;
     this->state = BUTTON_UP;
     this->time_entered_state = millis();
@@ -10,8 +9,8 @@ Button::Button(int pin, unsigned long debounce_delay_ms, bool use_interupts, boo
     this->state_from_interrupt = BUTTON_UP;
     this->last_debounce_time = 0;
     this->duration_in_previous_state = 0;
-    this->duration_in_this_state_previously = 0;
-    this->use_interupts = use_interupts;
+    this->time_of_last_up = 0;
+    this->use_interrupts = use_interrupts;
     this->btn_pulls_to_ground = btn_pulls_to_ground;
     this->long_press_time_ms = long_press_time_ms;
     this->double_press_time_ms = double_press_time_ms;
@@ -26,13 +25,19 @@ Button::Button(int pin, unsigned long debounce_delay_ms, bool use_interupts, boo
         pinMode(pin, INPUT_PULLDOWN);
     }
     
-    if (use_interupts) {
+    if (use_interrupts) {
         attachInterruptArg(digitalPinToInterrupt(pin), [](void* arg) {
             static_cast<Button*>(arg)->handleOnDownInterrupt();
-        }, this, btn_pulls_to_ground ? ONLOW : ONHIGH);
+        }, this, btn_pulls_to_ground ? FALLING : RISING);
         attachInterruptArg(digitalPinToInterrupt(pin), [](void* arg) {
             static_cast<Button*>(arg)->handleOnUpInterrupt();
-        }, this, btn_pulls_to_ground ? ONHIGH : ONLOW);
+        }, this, btn_pulls_to_ground ? RISING : FALLING);
+    }
+}
+
+Button::~Button() {
+    if (this->use_interrupts) {
+        detachInterrupt(digitalPinToInterrupt(this->pin));
     }
 }
 
@@ -54,7 +59,7 @@ void Button::handleOnUpInterrupt() {
 
 void Button::tick() {
     int reading = BUTTON_UP;
-    if (this->use_interupts) {
+    if (this->use_interrupts) {
         reading = this->state_from_interrupt;
     } else {
         reading = digitalRead(this->pin);
@@ -72,7 +77,6 @@ void Button::tick() {
     if ((current_time - this->last_debounce_time) > this->debounce_delay_ms) {
         if (reading != this->state) {
             // State has changed (and stabilised)
-            this->duration_in_this_state_previously = this->duration_in_previous_state;
             this->duration_in_previous_state = current_time - this->time_entered_state;
             this->time_entered_state = current_time;
             this->state = reading;
@@ -84,6 +88,7 @@ void Button::tick() {
                     this->onDownCallback();
                 }
             } else {
+                this->time_of_last_up = current_time;
                 if (this->onUpCallback) {
                     this->onUpCallback();
                 }
@@ -92,20 +97,23 @@ void Button::tick() {
     }
 
     if (!this->state_handled && this->state == BUTTON_UP) {
+        unsigned long time_since_last_up = this->time_of_last_up > 0 ? (current_time - this->time_of_last_up) : ULONG_MAX;
+        
         // If the button is up, check if it was long pressed
         if (this->duration_in_previous_state >= this->long_press_time_ms) {
             this->state_handled = true; // Mark the state as handled
             if (this->onLongPressedCallback) {
                 this->onLongPressedCallback(this->duration_in_previous_state);
             }
-        } else if (this->duration_in_this_state_previously > 0 && this->duration_in_this_state_previously < this->double_press_time_ms) { 
-            // Check if it was double pressed
+        } else if (time_since_last_up < this->double_press_time_ms && this->duration_in_previous_state > 0) { 
+            // Check if it was double pressed (second press within double_press_time_ms)
             this->state_handled = true; // Mark the state as handled
+            this->time_of_last_up = 0; // Reset to prevent triple press being detected as double
             if (this->onDoublePressedCallback) {
-                this->onDoublePressedCallback(this->duration_in_previous_state);
+                this->onDoublePressedCallback(time_since_last_up);
             }
-        } else if (this->duration_in_previous_state > 0 && (current_time - this->last_press_time) > this->double_press_time_ms) { 
-            // Check if it was a single press
+        } else if (this->duration_in_previous_state > 0 && time_since_last_up >= this->double_press_time_ms) { 
+            // Check if it was a single press (no second press within double_press_time_ms)
             this->state_handled = true; // Mark the state as handled
             if (this->onPressedCallback) {
                 this->onPressedCallback(this->duration_in_previous_state);
@@ -134,18 +142,18 @@ void Button::onUp(std::function<void()> callback) {
     this->onUpCallback = callback;
 }
 
-unsigned long Button::getTimeInLastState() {
+unsigned long Button::getTimeInLastState() const {
     return this->duration_in_previous_state;
 }
 
-unsigned long Button::getTimeInCurrentState() {
+unsigned long Button::getTimeInCurrentState() const {
     return millis() - this->time_entered_state;
 }
 
-bool Button::isDown() {
+bool Button::isDown() const {
     return this->state == BUTTON_DOWN;
 }
 
-bool Button::isUp() {
+bool Button::isUp() const {
     return this->state == BUTTON_UP;
 }

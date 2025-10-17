@@ -1,7 +1,7 @@
 {
     "name": "hub-robot-core",
     "description": "Core library for the Robot modules provided by the Hub",
-    "version": "0.1.4",
+    "version": "0.2.0",
     "authors": [
         {
             "name": "Adam Strickland",
