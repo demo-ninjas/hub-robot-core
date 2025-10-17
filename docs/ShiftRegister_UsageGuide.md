@@ -1,4 +1,3 @@
-````markdown
 # ShiftRegister Class - Usage Guide
 
 ## Quick Start
@@ -658,5 +657,3 @@ This component is subject to the main project license (see `LICENSE`).
 ---
 
 **Need help?** Check the examples above or review the test suite for detailed usage scenarios.
-
-````

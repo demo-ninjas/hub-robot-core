@@ -1,4 +1,4 @@
-````markdown
+
 # I2C Utilities - Usage Guide
 
 ## Quick Start
@@ -293,4 +293,3 @@ This component follows the main project license (see `LICENSE`).
 
 ---
 **Need help?** Re-run `scan_i2c()` with `showErrors=true` and examine wiring & pull-ups.
-````

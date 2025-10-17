@@ -1,4 +1,3 @@
-````markdown
 # String Utilities - Usage Guide
 
 ## Quick Start
@@ -1088,5 +1087,3 @@ This component is subject to the main project license (see `LICENSE`).
 ---
 
 **Need help?** Review the examples above or examine the test suite for detailed usage scenarios.
-
-````
