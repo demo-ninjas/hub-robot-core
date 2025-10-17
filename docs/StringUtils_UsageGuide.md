@@ -907,21 +907,6 @@ String removeAllSpaces(String str) {
 }
 ```
 
-## Testing
-
-The library includes comprehensive unit tests. To run:
-
-```bash
-pio test -f test_string_utils
-```
-
-**Test Coverage:**
-- UTF-8 character counting (ASCII, multi-byte, mixed)
-- Byte length validation
-- Split with various delimiters and configurations
-- Trim with different whitespace combinations
-- Edge cases (empty strings, all whitespace, no delimiters)
-- Memory safety and performance benchmarks
 
 ## Example: Complete Application
 

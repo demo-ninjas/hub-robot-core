@@ -1027,23 +1027,6 @@ void loop() {
 }
 ```
 
-## Unit Tests
-
-Reference comprehensive tests in `test/test_wifi_manager.cpp`:
-- Constructor validation
-- Connection lifecycle (both platforms)
-- Event handling (ESP32)
-- Callback registration and firing
-- Auto-reconnect behavior
-- Status transitions
-- Edge cases and error handling
-- Integration scenarios
-
-To execute tests:
-```bash
-pio test -f test_wifi_manager
-```
-
 ## License
 
 This component is subject to the main project license (see `LICENSE`).

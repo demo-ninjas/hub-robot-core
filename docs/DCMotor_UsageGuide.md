@@ -176,16 +176,6 @@ Notes:
 - Redundant `setSpeed()` does zero I/O (fast path). Useful in loops recalculating speed but unchanged.
 - On ESP32, `analogWrite` uses LEDC; consider customizing channel/frequency if needed (extension idea).
 
-## Unit Tests
-Reference tests in `test/test_dc_motor.cpp`:
-- Validate direction logic, clamping, redundancy optimization, braking, transitions.
-- Use mocked pin and PWM arrays (no hardware reliance).
-
-To execute (after installing PlatformIO):
-```bash
-pio test --without-uploading
-```
-
 ## Extending the Class
 Potential additions (not yet implemented):
 - Configurable PWM frequency / LEDC channel selection (ESP32-specific).

@@ -278,15 +278,6 @@ void loop() {
 }
 ```
 
-## Unit Testing
-
-You can wrap the scan in a test harness (mock TwoWire / simulate acknowledgments) to validate logic without hardware. In production environments, integration tests using known device addresses are recommended.
-
-Run all project tests:
-```bash
-pio test
-```
-
 ## License
 
 This component follows the main project license (see `LICENSE`).

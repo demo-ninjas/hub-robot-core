@@ -635,21 +635,6 @@ void loadState() {
 }
 ```
 
-## Unit Tests
-
-Reference comprehensive tests in `test/test_shift_register.cpp`:
-- Constructor validation and constraints
-- Individual bit set/get operations
-- Batch operations (setAll, clear)
-- Bounds checking and error handling
-- Edge cases and misuse scenarios
-- 64-bit operation correctness
-
-To execute tests:
-```bash
-pio test
-```
-
 ## License
 
 This component is subject to the main project license (see `LICENSE`).
