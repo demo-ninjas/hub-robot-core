@@ -83,12 +83,12 @@ void Button::tick() {
             this->state_handled = false;
 
             if (this->state == BUTTON_DOWN) {
+                this->time_of_last_up = current_time - this->duration_in_previous_state;
                 this->last_press_time = current_time;             
                 if (this->onDownCallback) {
                     this->onDownCallback();
                 }
             } else {
-                this->time_of_last_up = current_time;
                 if (this->onUpCallback) {
                     this->onUpCallback();
                 }
@@ -108,7 +108,7 @@ void Button::tick() {
         } else if (time_since_last_up < this->double_press_time_ms && this->duration_in_previous_state > 0) { 
             // Check if it was double pressed (second press within double_press_time_ms)
             this->state_handled = true; // Mark the state as handled
-            this->time_of_last_up = 0; // Reset to prevent triple press being detected as double
+            this->time_of_last_up = 0;
             if (this->onDoublePressedCallback) {
                 this->onDoublePressedCallback(time_since_last_up);
             }
